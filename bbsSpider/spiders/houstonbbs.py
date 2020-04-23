@@ -38,15 +38,16 @@ class HoustonbbsSpider(scrapy.Spider):
         eventsQueue = deque(maxlen = 20)
 
         allEventTexts = "\t".join(eventTexts)
-        if "租" in allEventTexts or "售" in allEventTexts:
+        if re.search(u"租|卖|售|出", allEventTexts):
             for dataAfter, href, eventText in zip(dataAfters, hrefs, eventTexts):
-                if "租" in eventText or "售" in eventText:
-                    eventsQueue.append("{0}\thttps://www.houstonbbs.com{1}\t{2}\n".format(
+                if re.search(u"租|卖|售|出",  eventText):
+                    eventsQueue.append("{0}\nhttps://www.houstonbbs.com{1}\n{2}\n\n".format(
                         dataAfter, href, eventText))
 
         pickle.dump(eventsQueue, open("/home/dustin/temp/houstonbbs.cache.pkl", 'wb'))
 
         newsSet = set(eventsQueue).difference(set(oldsQueue))
+        newsSet = sorted(newsSet, key = lambda item:int(item.split("\n")[1].split("/")[-1]), reverse=True)
         if len(newsSet) > 0:
             with open("/home/dustin/temp/houstonbbsNews.txt", 'w') as outputFile:
                 for news in newsSet:
