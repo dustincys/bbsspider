@@ -5,6 +5,7 @@ import os
 import pickle
 import subprocess
 from collections import deque
+from bbsSpider.items import BbsspiderItem
 
 
 class HoustonbbsSpider(scrapy.Spider):
@@ -18,38 +19,45 @@ class HoustonbbsSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
+        cacheLocal = "/home/dustin/temp/houstonbbs.cache.pkl"
+        newsout = "/home/dustin/temp/houstonbbsNews.txt"
+
         recentActs = response.css("section.items ul.even_odd_parent")[1]
         eventTexts = recentActs.css("ul li a::text").getall()
         eventObjs = recentActs.css("ul li").getall()
         hrefs = [re.search("(?<=href=\").+?(?=\")", eventText).group() for eventText in eventObjs]
         dataAfters = [re.search("(?<=data-after=\").+?(?=\")", eventText).group() for eventText in eventObjs]
 
-
-        target = "/home/dustin/temp/houstonbbs.cache.pkl"
-
         try:
-            if os.path.getsize(target) > 0:
-                oldsQueue = pickle.load(open(target, 'rb'))
+            if os.path.getsize(cacheLocal) > 0:
+                oldsQueue = pickle.load(open(cacheLocal, 'rb'))
             else:
                 oldsQueue = deque(maxlen = 20)
         except:
             oldsQueue = deque(maxlen = 20)
 
         eventsQueue = deque(maxlen = 20)
+        for dataAfter, href, eventText in zip(dataAfters, hrefs, eventTexts):
+            urlFull = "https://www.houstonbbs.com{0}".format(href)
 
-        allEventTexts = "\t".join(eventTexts)
-        if re.search(u"租|卖|售|出", allEventTexts):
-            for dataAfter, href, eventText in zip(dataAfters, hrefs, eventTexts):
-                if re.search(u"租|卖|售|出",  eventText):
-                    eventsQueue.append("{0}\nhttps://www.houstonbbs.com{1}\n{2}\n\n".format(
-                        dataAfter, href, eventText))
+            cacheItem = "{0}\n{1}\n{2}\n\n".format(dataAfter, urlFull, eventText)
+            if cacheItem not in oldsQueue:
+                yield scrapy.Request(url=urlFull, meta={"dataAfter": dataAfter, "urlFull": urlFull, "eventText": eventText}, callback=self.detail_parse)
 
-        pickle.dump(eventsQueue, open("/home/dustin/temp/houstonbbs.cache.pkl", 'wb'))
+            eventsQueue.append(cacheItem)
+        pickle.dump(eventsQueue, open(cacheLocal, 'wb'))
 
-        newsSet = set(eventsQueue).difference(set(oldsQueue))
-        newsSet = sorted(newsSet, key = lambda item:int(item.split("\n")[1].split("/")[-1]), reverse=True)
-        if len(newsSet) > 0:
-            with open("/home/dustin/temp/houstonbbsNews.txt", 'w') as outputFile:
-                for news in newsSet:
-                    outputFile.write(news)
-            subprocess.call(['/home/dustin/data/github/bbsSpider/bbsSpider/bin/report.sh'])
+    def detail_parse(self, response):
+        categoryList = response.css("header.content_header nav.breadcrumb a::text").getall()
+        if "跳蚤市场" in categoryList:
+            newsItem = BbsspiderItem()
+            newsItem['date'] = response.meta["dataAfter"]
+            newsItem['url'] = response.meta["urlFull"]
+            newsItem['title'] = response.meta["eventText"]
+
+            allArticleContent = response.css("div.article_content::text").getall()
+            allArticleContent = [item.strip() for item in allArticleContent]
+            allArticleContent = re.sub('\n+', '\n', "\n".join(allArticleContent)).strip("\n")
+            newsItem['content'] = allArticleContent
+
+            yield newsItem
