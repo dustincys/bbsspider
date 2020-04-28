@@ -17,7 +17,16 @@ def parse(xmlFile, outFilePath):
             outFile.write("\n")
 
 def main():
-    parse("/home/dustin/temp/houston.xml", "/home/dustin/temp/houston.plain.txt")
+   import argparse
+   parser = argparse.ArgumentParser(description = 'parseargs')
+   parse.add_argument()
+
+   parser.add_argument('-i', dest='xmlfile', help='xmlfile')
+   parser.add_argument('-o', dest='txtfile', help='txtfile')
+
+   args = parser.parse_args()
+
+   parse(args.xmlfile, args.txtfile)
 
 if __name__ == '__main__':
     main()

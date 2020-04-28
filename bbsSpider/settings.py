@@ -64,9 +64,9 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'bbsSpider.pipelines.BbsspiderPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'bbsSpider.pipelines.BbsspiderPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -88,3 +88,10 @@ ROBOTSTXT_OBEY = False
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+
+HOUSTONBBS_CACHE_LOCAL = "/home/dustin/temp/houstonbbs.cache.pkl"
+HOUSTONBBS_EXPORT_DEFAULT = "/home/dustin/temp/houston.xml"
+HOUSTONBBS_EXPORT_IMPORTANT = "/home/dustin/temp/houston.important.xml"
+
+HOUSTONBBS_IMPORTANT = "(灯|书桌|UT\shousing)"

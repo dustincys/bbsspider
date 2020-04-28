@@ -6,6 +6,7 @@ import pickle
 import subprocess
 from collections import deque
 from bbsSpider.items import BbsspiderItem
+from bbsSpider import settings
 
 
 class HoustonbbsSpider(scrapy.Spider):
@@ -19,8 +20,7 @@ class HoustonbbsSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
-        cacheLocal = "/home/dustin/temp/houstonbbs.cache.pkl"
-        newsout = "/home/dustin/temp/houstonbbsNews.txt"
+        cacheLocal = settings.HOUSTONBBS_CACHE_LOCAL
 
         recentActs = response.css("section.items ul.even_odd_parent")[1]
         eventTexts = recentActs.css("ul li a::text").getall()
