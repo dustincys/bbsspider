@@ -19,7 +19,6 @@ def parse(xmlFile, outFilePath):
 def main():
    import argparse
    parser = argparse.ArgumentParser(description = 'parseargs')
-   parse.add_argument()
 
    parser.add_argument('-i', dest='xmlfile', help='xmlfile')
    parser.add_argument('-o', dest='txtfile', help='txtfile')
