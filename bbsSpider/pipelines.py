@@ -28,7 +28,7 @@ class BbsspiderPipeline(object):
             exporter.finish_exporting()
 
     def process_item(self, item, spider):
-        regexp = re.compile(settings.HOUSTONBBS_IMPORTANT)
+        regexp = re.compile(settings.HOUSTONBBS_IMPORTANT, re.IGNORECASE)
         if regexp.search(item['content']) or regexp.search(item['title']):
             self.exporters["important"].export_item(item)
         else:

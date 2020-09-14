@@ -89,7 +89,7 @@ ITEM_PIPELINES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-HOUSTONBBS_IMPORTANT = r"(UT\shousing|1b1b|1B1B)"
+HOUSTONBBS_IMPORTANT = r"(UThousing|UT\shousing|免费|赠送|处理|回国|电视|显示器|沙发|汽车|工具箱)"
 HOUSTONBBS_CACHE_LOCAL = "/home/dustin/temp/houstonbbs.cache.pkl"
 HOUSTONBBS_EXPORT_DEFAULT = "/home/dustin/temp/houston.xml"
 HOUSTONBBS_EXPORT_IMPORTANT = "/home/dustin/temp/houston.important.xml"
