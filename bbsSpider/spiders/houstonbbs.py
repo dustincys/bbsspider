@@ -41,6 +41,11 @@ class HoustonbbsSpider(scrapy.Spider):
             urlFull = "https://www.houstonbbs.com{0}".format(href)
 
             cacheItem = "{0}\n{1}\n{2}\n\n".format(dateAfter, urlFull, eventText)
+
+
+            self.logger.info("urlFull: {}".format(urlFull))
+            self.logger.info("cacheItem: {}".format(cacheItem))
+
             if cacheItem not in oldsQueue:
                 yield scrapy.Request(url=urlFull, meta={"dateAfter": dateAfter, "urlFull": urlFull, "eventText": eventText}, callback=self.detail_parse)
 
@@ -49,32 +54,34 @@ class HoustonbbsSpider(scrapy.Spider):
 
     def detail_parse(self, response):
         categoryList = response.css("header.content_header nav.breadcrumb a::text").getall()
-        if "生活资讯" in categoryList or "跳蚤" in categoryList:
-            newsItem = BbsspiderItem()
-            newsItem['date'] = response.meta["dateAfter"]
-            newsItem['url'] = response.meta["urlFull"]
-            newsItem['title'] = response.meta["eventText"]
+        self.logger.info("categoryList: {}".format(categoryList))
+
+        newsItem = BbsspiderItem()
+        newsItem['date'] = response.meta["dateAfter"]
+        newsItem['url'] = response.meta["urlFull"]
+        newsItem['title'] = response.meta["eventText"]
+        self.logger.info(newsItem)
 
 
-            articleUserNames = response.css("article header a::text").getall()
-            articleUserCities = response.css("article header span.city::text").getall()
-            articleUserResponseTime = response.css("article header span.time::text").getall()
+        articleUserNames = response.css("article header a::text").getall()
+        articleUserCities = response.css("article header span.city::text").getall()
+        articleUserResponseTime = response.css("article header span.time::text").getall()
 
-            articleUserContent = []
-            allArticleContent = response.css("div.forum_post article div.article_content")
-            for artC in allArticleContent:
-                tempac = artC.css("div.article_content::text").getall()
-                tempac = [item.strip() for item in tempac]
-                tempac = re.sub('\n+', '\n', "\n".join(tempac)).strip("\n")
-                articleUserContent.append(tempac)
+        articleUserContent = []
+        allArticleContent = response.css("div.forum_post article div.article_content")
+        for artC in allArticleContent:
+            tempac = artC.css("div.article_content::text").getall()
+            tempac = [item.strip() for item in tempac]
+            tempac = re.sub('\n+', '\n', "\n".join(tempac)).strip("\n")
+            articleUserContent.append(tempac)
 
-            content = ""
-            for un, uc, ur, auc in zip(articleUserNames,
-                                       articleUserCities,
-                                       articleUserResponseTime,
-                                       articleUserContent):
-                content = "{0}\n__________________\n{1}  \t{2}  \t{3}\n\n{4}\n\n".format(content, un, uc, ur, auc)
+        content = ""
+        for un, uc, ur, auc in zip(articleUserNames,
+                                    articleUserCities,
+                                    articleUserResponseTime,
+                                    articleUserContent):
+            content = "{0}\n__________________\n{1}  \t{2}  \t{3}\n\n{4}\n\n".format(content, un, uc, ur, auc)
 
-            newsItem['content'] = content
+        newsItem['content'] = content
 
-            yield newsItem
+        yield newsItem
