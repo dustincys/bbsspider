@@ -5,4 +5,3 @@ cat /home/dustin/temp/houston.plain.txt | /usr/bin/neomutt -s "houstonbbs news $
 /home/dustin/bin/notmuchUpdate.sh
 
 /usr/bin/notify-send "Houston BBS" "$(/usr/bin/cat /home/dustin/temp/houston.plain.txt)"
-

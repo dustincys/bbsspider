@@ -22,11 +22,11 @@ class HoustonbbsSpider(scrapy.Spider):
     def parse(self, response):
         cacheLocal = settings.HOUSTONBBS_CACHE_LOCAL
 
-        recentActs = response.css("section.items ul.even_odd_parent")[1]
+        recentActs = response.css("section.items")[1]
         eventTexts = recentActs.css("ul li a::text").getall()
         eventObjs = recentActs.css("ul li").getall()
         hrefs = [re.search("(?<=href=\").+?(?=\")", eventText).group() for eventText in eventObjs]
-        dataAfters = [re.search("(?<=data-after=\").+?(?=\")", eventText).group() for eventText in eventObjs]
+        dateAfters = [re.search("(?<=span\>).+?(?=<)", eventText).group() for eventText in eventObjs]
 
         try:
             if os.path.getsize(cacheLocal) > 0:
@@ -37,12 +37,12 @@ class HoustonbbsSpider(scrapy.Spider):
             oldsQueue = deque(maxlen = 20)
 
         eventsQueue = deque(maxlen = 20)
-        for dataAfter, href, eventText in zip(dataAfters, hrefs, eventTexts):
+        for dateAfter, href, eventText in zip(dateAfters, hrefs, eventTexts):
             urlFull = "https://www.houstonbbs.com{0}".format(href)
 
-            cacheItem = "{0}\n{1}\n{2}\n\n".format(dataAfter, urlFull, eventText)
+            cacheItem = "{0}\n{1}\n{2}\n\n".format(dateAfter, urlFull, eventText)
             if cacheItem not in oldsQueue:
-                yield scrapy.Request(url=urlFull, meta={"dataAfter": dataAfter, "urlFull": urlFull, "eventText": eventText}, callback=self.detail_parse)
+                yield scrapy.Request(url=urlFull, meta={"dateAfter": dateAfter, "urlFull": urlFull, "eventText": eventText}, callback=self.detail_parse)
 
             eventsQueue.append(cacheItem)
         pickle.dump(eventsQueue, open(cacheLocal, 'wb'))
@@ -51,7 +51,7 @@ class HoustonbbsSpider(scrapy.Spider):
         categoryList = response.css("header.content_header nav.breadcrumb a::text").getall()
         if "生活资讯" in categoryList or "跳蚤" in categoryList:
             newsItem = BbsspiderItem()
-            newsItem['date'] = response.meta["dataAfter"]
+            newsItem['date'] = response.meta["dateAfter"]
             newsItem['url'] = response.meta["urlFull"]
             newsItem['title'] = response.meta["eventText"]
 
