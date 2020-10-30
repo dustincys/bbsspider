@@ -7,6 +7,7 @@ import subprocess
 from collections import deque
 from bbsSpider.items import BbsspiderItem
 from bbsSpider import settings
+from datetime import datetime
 
 
 class HoustonbbsSpider(scrapy.Spider):
@@ -22,11 +23,12 @@ class HoustonbbsSpider(scrapy.Spider):
     def parse(self, response):
         cacheLocal = settings.HOUSTONBBS_CACHE_LOCAL
 
-        recentActs = response.css("section.items")[1]
-        eventTexts = recentActs.css("ul li a::text").getall()
-        eventObjs = recentActs.css("ul li").getall()
+        recentActs = response.css("section.home_items")[1]
+        eventTexts = recentActs.css("div div a::text").getall()
+        eventObjs = recentActs.css("div div").getall()
         hrefs = [re.search("(?<=href=\").+?(?=\")", eventText).group() for eventText in eventObjs]
-        dateAfters = [re.search("(?<=span\>).+?(?=<)", eventText).group() for eventText in eventObjs]
+        dateAftersTS = recentActs.css("div div span::attr(data-time)").getall()
+        dateAfters = [ datetime.fromtimestamp(int(dats)).strftime("%m/%d/%Y-%H:%M:%S") for dats in dateAftersTS ]
 
         try:
             if os.path.getsize(cacheLocal) > 0:
@@ -65,7 +67,9 @@ class HoustonbbsSpider(scrapy.Spider):
 
         articleUserNames = response.css("article header a::text").getall()
         articleUserCities = response.css("article header span.city::text").getall()
-        articleUserResponseTime = response.css("article header span.time::text").getall()
+
+        articleUserResponseTimeTS = response.css("article header span.time::attr(data-time)").getall()
+        articleUserResponseTime = [ datetime.fromtimestamp(int(dats)).strftime("%m/%d/%Y-%H:%M:%S") for dats in articleUserResponseTimeTS ]
 
         articleUserContent = []
         allArticleContent = response.css("div.forum_post article div.article_content")
