@@ -27,7 +27,7 @@ class HoustonbbsSpider(scrapy.Spider):
         eventTexts = recentActs.css("div div a::text").getall()
         eventObjs = recentActs.css("div div").getall()
         hrefs = [re.search("(?<=href=\").+?(?=\")", eventText).group() for eventText in eventObjs]
-        dateAftersTS = recentActs.css("div div span::attr(data-time)").getall()
+        dateAftersTS = recentActs.css("div div time::attr(data-time)").getall()
         dateAfters = [ datetime.fromtimestamp(int(dats)).strftime("%m/%d/%Y-%H:%M:%S") for dats in dateAftersTS ]
 
         try:
@@ -44,7 +44,6 @@ class HoustonbbsSpider(scrapy.Spider):
 
             cacheItem = "{0}\n{1}\n{2}\n\n".format(dateAfter, urlFull, eventText)
 
-
             self.logger.info("urlFull: {}".format(urlFull))
             self.logger.info("cacheItem: {}".format(cacheItem))
 
@@ -56,23 +55,24 @@ class HoustonbbsSpider(scrapy.Spider):
 
     def detail_parse(self, response):
         categoryList = response.css("header.content_header nav.breadcrumb a::text").getall()
-        self.logger.info("categoryList: {}".format(categoryList))
 
         newsItem = BbsspiderItem()
         newsItem['date'] = response.meta["dateAfter"]
         newsItem['url'] = response.meta["urlFull"]
         newsItem['title'] = response.meta["eventText"]
+
+        self.logger.info("newsItem:")
         self.logger.info(newsItem)
 
 
         articleUserNames = response.css("article header a::text").getall()
         articleUserCities = response.css("article header span.city::text").getall()
 
-        articleUserResponseTimeTS = response.css("article header span.time::attr(data-time)").getall()
+        articleUserResponseTimeTS = response.css("article header time::attr(data-time)").getall()
         articleUserResponseTime = [ datetime.fromtimestamp(int(dats)).strftime("%m/%d/%Y-%H:%M:%S") for dats in articleUserResponseTimeTS ]
 
         articleUserContent = []
-        allArticleContent = response.css("div.forum_post article div.article_content")
+        allArticleContent = response.css("article.message_list section div.article_content")
         for artC in allArticleContent:
             tempac = artC.css("div.article_content::text").getall()
             tempac = [item.strip() for item in tempac]
