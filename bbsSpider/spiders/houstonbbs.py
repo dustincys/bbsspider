@@ -32,13 +32,13 @@ class HoustonbbsSpider(scrapy.Spider):
 
         try:
             if os.path.getsize(cacheLocal) > 0:
-                oldsQueue = pickle.load(open(cacheLocal, 'rb'))
+                eventsQueue = pickle.load(open(cacheLocal, 'rb'))
             else:
-                oldsQueue = deque(maxlen = 20)
+                eventsQueue = deque(maxlen = 200)
         except:
-            oldsQueue = deque(maxlen = 20)
+            eventsQueue = deque(maxlen = 200)
 
-        eventsQueue = deque(maxlen = 20)
+        eventsQueue = deque(maxlen = 200)
         for dateAfter, href, eventText in zip(dateAfters, hrefs, eventTexts):
             urlFull = "https://www.houstonbbs.com{0}".format(href)
 
@@ -47,7 +47,7 @@ class HoustonbbsSpider(scrapy.Spider):
             self.logger.info("urlFull: {}".format(urlFull))
             self.logger.info("cacheItem: {}".format(cacheItem))
 
-            if cacheItem not in oldsQueue:
+            if cacheItem not in eventsQueue:
                 yield scrapy.Request(url=urlFull, meta={"dateAfter": dateAfter, "urlFull": urlFull, "eventText": eventText}, callback=self.detail_parse)
 
             eventsQueue.append(cacheItem)

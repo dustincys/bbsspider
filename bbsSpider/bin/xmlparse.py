@@ -7,7 +7,7 @@ def parse(xmlFile, outFilePath):
     doc = ET.parse(xmlFile)
     root = doc.getroot()
 
-    with open(outFilePath, "w") as outFile:
+    with open(outFilePath, "a") as outFile:
         for elem in root:
             outFile.write("=================================\n")
             for subelem in elem:
