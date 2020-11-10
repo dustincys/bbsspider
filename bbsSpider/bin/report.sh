@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cat /home/dustin/temp/houston.plain.txt | /usr/bin/neomutt -s "houstonbbs news $(/usr/bin/date +'%X')" yanshuochu@qq.com
+cat /home/dustin/temp/houston.plain.txt | /usr/bin/neomutt -s "houstonbbs news $(/usr/bin/date +'%X')" yanshuochu@qq.com qingqingjiang.huaduo@gmail.com
 
 /home/dustin/bin/notmuchUpdate.sh
 

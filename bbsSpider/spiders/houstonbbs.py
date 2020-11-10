@@ -33,12 +33,17 @@ class HoustonbbsSpider(scrapy.Spider):
         try:
             if os.path.getsize(cacheLocal) > 0:
                 eventsQueue = pickle.load(open(cacheLocal, 'rb'))
+                self.logger.info("eventsQueue read successfully!")
             else:
                 eventsQueue = deque(maxlen = 200)
+                self.logger.info("eventsQueue is empty!")
         except:
             eventsQueue = deque(maxlen = 200)
+            self.logger.info("eventsQueue is error!")
 
-        eventsQueue = deque(maxlen = 200)
+        self.logger.info("eventsQueue size before this run: {}".format(len(eventsQueue)))
+        self.logger.info("eventsQueue :")
+        self.logger.info(eventsQueue)
         for dateAfter, href, eventText in zip(dateAfters, hrefs, eventTexts):
             urlFull = "https://www.houstonbbs.com{0}".format(href)
 
@@ -51,7 +56,10 @@ class HoustonbbsSpider(scrapy.Spider):
                 yield scrapy.Request(url=urlFull, meta={"dateAfter": dateAfter, "urlFull": urlFull, "eventText": eventText}, callback=self.detail_parse)
 
             eventsQueue.append(cacheItem)
-        pickle.dump(eventsQueue, open(cacheLocal, 'wb'))
+        self.logger.info("eventsQueue size after this run: {}".format(len(eventsQueue)))
+        self.logger.info("eventsQueue :")
+        self.logger.info(eventsQueue)
+        pickle.dump(eventsQueue, open(cacheLocal, 'wb'),  pickle.HIGHEST_PROTOCOL)
 
     def detail_parse(self, response):
         categoryList = response.css("header.content_header nav.breadcrumb a::text").getall()
