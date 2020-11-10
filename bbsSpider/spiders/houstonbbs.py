@@ -54,8 +54,7 @@ class HoustonbbsSpider(scrapy.Spider):
 
             if cacheItem not in eventsQueue:
                 yield scrapy.Request(url=urlFull, meta={"dateAfter": dateAfter, "urlFull": urlFull, "eventText": eventText}, callback=self.detail_parse)
-
-            eventsQueue.append(cacheItem)
+                eventsQueue.append(cacheItem)
         self.logger.info("eventsQueue size after this run: {}".format(len(eventsQueue)))
         self.logger.info("eventsQueue :")
         self.logger.info(eventsQueue)
