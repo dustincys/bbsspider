@@ -21,6 +21,9 @@ class HoustonbbsSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
+        # only put the important even in the eventQueue
+        regexp = re.compile(settings.HOUSTONBBS_IMPORTANT, re.IGNORECASE)
+
         cacheLocal = settings.HOUSTONBBS_CACHE_LOCAL
 
         recentActs = response.css("section.home_items")[1]
@@ -53,8 +56,13 @@ class HoustonbbsSpider(scrapy.Spider):
             self.logger.info("cacheItem: {}".format(cacheItem))
 
             if cacheItem not in eventsQueue:
-                yield scrapy.Request(url=urlFull, meta={"dateAfter": dateAfter, "urlFull": urlFull, "eventText": eventText}, callback=self.detail_parse)
-                eventsQueue.append(cacheItem)
+                yield scrapy.Request(url=urlFull, meta={"dateAfter": dateAfter,
+                                                        "urlFull": urlFull,
+                                                        "eventText": eventText},
+                                     callback=self.detail_parse)
+
+                if regexp.search(eventText):
+                    eventsQueue.append(cacheItem)
         self.logger.info("eventsQueue size after this run: {}".format(len(eventsQueue)))
         self.logger.info("eventsQueue :")
         self.logger.info(eventsQueue)
