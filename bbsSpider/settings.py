@@ -39,33 +39,33 @@ DOWNLOAD_DELAY = 3
 #TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
-#DEFAULT_REQUEST_HEADERS = {
+# DEFAULT_REQUEST_HEADERS = {
 #   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
 #   'Accept-Language': 'en',
-#}
+# }
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
+# SPIDER_MIDDLEWARES = {
 #    'bbsSpider.middlewares.BbsspiderSpiderMiddleware': 543,
-#}
+# }
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
+# DOWNLOADER_MIDDLEWARES = {
 #    'bbsSpider.middlewares.BbsspiderDownloaderMiddleware': 543,
-#}
+# }
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
+# EXTENSIONS = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
-#}
+# }
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'bbsSpider.pipelines.BbsspiderPipeline': 300,
+    'bbsSpider.pipelines.BbsspiderPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -89,7 +89,7 @@ ITEM_PIPELINES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-HOUSTONBBS_IMPORTANT = r"(UThousing|UT\shousing|琴|空气炸锅|免费|赠送|回国|渔|婴|孩|儿童|幼儿)"
+HOUSTONBBS_IMPORTANT = r"(UThousing|UT\shousing|免费|送|回国|渔|鱼|琴|烧烤|桌|椅|单人沙发|电视|游戏|车)"
 HOUSTONBBS_CACHE_LOCAL = "/home/dustin/temp/houstonbbs.cache.pkl"
 HOUSTONBBS_EXPORT_DEFAULT = "/home/dustin/temp/houston.xml"
 HOUSTONBBS_EXPORT_IMPORTANT = "/home/dustin/temp/houston.important.xml"
