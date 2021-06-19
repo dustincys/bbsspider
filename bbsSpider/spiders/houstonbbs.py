@@ -12,6 +12,7 @@ from datetime import datetime
 
 class HoustonbbsSpider(scrapy.Spider):
     name = "houstonbbs"
+    regexp = re.compile(settings.HOUSTONBBS_IMPORTANT, re.IGNORECASE)
 
     def start_requests(self):
         urls = [
@@ -22,7 +23,6 @@ class HoustonbbsSpider(scrapy.Spider):
 
     def parse(self, response):
         # only put the important even in the eventQueue
-        regexp = re.compile(settings.HOUSTONBBS_IMPORTANT, re.IGNORECASE)
 
         cacheLocal = settings.HOUSTONBBS_CACHE_LOCAL
 
@@ -50,6 +50,7 @@ class HoustonbbsSpider(scrapy.Spider):
             "eventsQueue size before this run: {}".format(len(eventsQueue)))
         self.logger.info("eventsQueue :")
         self.logger.info(eventsQueue)
+
         for dateAfter, href, eventText in zip(dateAfters, hrefs, eventTexts):
             urlFull = "https://www.houstonbbs.com{0}".format(href)
 
@@ -65,8 +66,9 @@ class HoustonbbsSpider(scrapy.Spider):
                                                         "eventText": eventText},
                                      callback=self.detail_parse)
 
-                if regexp.search(eventText):
+                if self.regexp.search(eventText):
                     eventsQueue.append(cacheItem)
+
         self.logger.info(
             "eventsQueue size after this run: {}".format(len(eventsQueue)))
         self.logger.info("eventsQueue :")
@@ -113,5 +115,10 @@ class HoustonbbsSpider(scrapy.Spider):
                 content, un, uc, ur, auc)
 
         newsItem['content'] = content
+
+        if self.regexp.search(newsItem['title']):
+            newsItem['isImportant'] = True
+        else:
+            newsItem['isImportant'] = False
 
         yield newsItem
