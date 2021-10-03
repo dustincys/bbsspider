@@ -117,8 +117,8 @@ class HoustonbbsSpider(scrapy.Spider):
         newsItem['content'] = content
 
         if self.regexp.search(newsItem['title']):
-            newsItem['isImportant'] = True
+            newsItem['isImportant'] = "True"
         else:
-            newsItem['isImportant'] = False
+            newsItem['isImportant'] = "False"
 
         yield newsItem

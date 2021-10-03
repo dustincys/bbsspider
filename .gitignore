@@ -1,2 +1,5 @@
 /bbsSpider/__pycache__/
 /bbsSpider/spiders/__pycache__/
+*.png
+*.pkl
+**.db

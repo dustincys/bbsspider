@@ -30,8 +30,10 @@ class BbsspiderPipeline(object):
             exporter.finish_exporting()
 
     def process_item(self, item, spider):
-        if item['isImportant']:
+        if item['isImportant'] == "True":
+            item.pop('isImportant')
             self.exporters["important"].export_item(item)
         else:
+            item.pop('isImportant')
             self.exporters["default"].export_item(item)
         return item
