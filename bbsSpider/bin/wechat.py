@@ -55,7 +55,7 @@ class itchatSender(object):
 
     def sendMPSMsg(self, roomName, context):
         friends_list = itchat.get_friends(update=True)
-        name = itchat.search_mps(name=roomName)
+        name = itchat.search_friends(name=roomName)
         userName = name[0]["UserName"]
         itchat.send(context, userName)
 
