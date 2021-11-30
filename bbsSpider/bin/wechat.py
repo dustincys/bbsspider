@@ -33,9 +33,11 @@ class itchatSender(object):
         print isRoom == "True"
         if isRoom == "True":
             self.sendChatroomMsg(roomName, context)
-        else:
+        elif isRoom == "False":
             print "isRoom"
             print isRoom
+            self.sendFriendMsg(roomName, context)
+        else:
             self.sendMPSMsg(roomName, context)
 
     def sendChatroomMsg(self, roomName, context):
@@ -53,11 +55,20 @@ class itchatSender(object):
             msg = "{}\n\n消息由爬虫自动发送".format(context)
             itchat.send_msg(msg=msg, toUserName=username)
 
-    def sendMPSMsg(self, roomName, context):
+    def sendFriendMsg(self, roomName, context):
         friends_list = itchat.get_friends(update=True)
         name = itchat.search_friends(name=roomName)
         userName = name[0]["UserName"]
-        itchat.send(context, userName)
+        if username:
+            msg = "{}\n\n消息由爬虫自动发送".format(context)
+            itchat.send(msg, userName)
+
+    def sendMPSMsg(self, roomName, context):
+        mps = itchat.get_mps(update=True)
+        name = itchat.search_mps(name=roomName)
+        userName = name[0]["UserName"]
+        if userName:
+            itchat.send(context, userName)
 
     def loginCallback(self):
         print "Successfully logged in."
