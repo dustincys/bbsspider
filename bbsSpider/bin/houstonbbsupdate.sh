@@ -15,10 +15,10 @@ ITEXT=/home/dustin/temp/houston.important
 # /usr/bin/scrapy crawl houstonbbs -o /home/dustin/temp/houston.xml -t xml 2>&1 >/dev/null
 /usr/bin/scrapy crawl houstonbbs 2>&1 >/dev/null
 
-if [ -f ${DXML} ] && [ $(/usr/bin/cat ${DXML} | /usr/bin/wc -l) -gt 1 ] ; then
-    /usr/bin/python2.7 /home/dustin/github/bbsSpider/bbsSpider/bin/xmlparse.py -i ${DXML} -o ${DTEXT}
-    /home/dustin/github/bbsSpider/bbsSpider/bin/report.sh
-fi
+# if [ -f ${DXML} ] && [ $(/usr/bin/cat ${DXML} | /usr/bin/wc -l) -gt 1 ] ; then
+#     /usr/bin/python2.7 /home/dustin/github/bbsSpider/bbsSpider/bin/xmlparse.py -i ${DXML} -o ${DTEXT}
+#     /home/dustin/github/bbsSpider/bbsSpider/bin/report.sh
+# fi
 
 if [ -f ${IXML} ] && [ $(/usr/bin/cat ${IXML} | /usr/bin/wc -l) -gt 1 ] ; then
     /usr/bin/python2.7 /home/dustin/github/bbsSpider/bbsSpider/bin/xmlparseImportant.py -i ${IXML} -op ${ITEXT}

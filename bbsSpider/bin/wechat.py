@@ -59,7 +59,7 @@ class itchatSender(object):
         friends_list = itchat.get_friends(update=True)
         name = itchat.search_friends(name=roomName)
         userName = name[0]["UserName"]
-        if username:
+        if userName:
             msg = "{}\n\n消息由爬虫自动发送".format(context)
             itchat.send(msg, userName)
 
